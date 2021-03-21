@@ -47,7 +47,7 @@
             "get": {
                 "tags": ["Category"],
                 "summary": "List all categories",
-                "description": "List all categoriess",
+                "description": "List all categories",
                 "responses": {
                     "200": {
                         "description": "Sucess",
