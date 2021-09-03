@@ -15,7 +15,28 @@ class CarsRepositoryInMemory implements ICarsRepository {
     daily_rate,
     category_id,
     brand,
+    specifications,
+    id,
   }: ICreateCarDTO): Promise<Car> {
+    // Se tiver um carro, apenas atualiza o mesmo
+    if (id) {
+      const car = this.cars.find((car) => car.id === id);
+
+      Object.assign(car, {
+        name,
+        license_plate,
+        fine_amount,
+        description,
+        daily_rate,
+        category_id,
+        brand,
+        specifications,
+      });
+
+      return car;
+    }
+
+    // Caso não tenha um carro, é criado um novo objeto carro
     const car = new Car();
 
     Object.assign(car, {
@@ -26,6 +47,7 @@ class CarsRepositoryInMemory implements ICarsRepository {
       daily_rate,
       category_id,
       brand,
+      specifications,
     });
 
     this.cars.push(car);
@@ -84,16 +106,6 @@ class CarsRepositoryInMemory implements ICarsRepository {
 
   async findById(id: string): Promise<Car> {
     return this.cars.find((car) => car.id === id);
-  }
-
-  async createSpecification(
-    car: Car,
-    specifications: Specification[]
-  ): Promise<Car> {
-    specifications.forEach((specification) =>
-      car.specifications.push(specification)
-    );
-    return car;
   }
 }
 

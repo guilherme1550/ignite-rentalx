@@ -58,6 +58,10 @@ describe("Create Car Specification", () => {
       specifications_id,
     });
 
+    // --- Expect realizado de maneira diferente do que foi feito na aula ---
+    // --- Pois dessa maneira o teste fica melhor implementado, e garante que as specifications foram realmente add ao carro ---
+    // --- Aula: Chapter IV - Cap 3 - Finalizando CreateCarSpecificationUseCase ---
+    expect(car.specifications.length).toBe(2);
     expect(car).toEqual(
       expect.objectContaining({
         specifications: [

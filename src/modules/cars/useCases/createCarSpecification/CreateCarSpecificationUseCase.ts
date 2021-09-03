@@ -1,7 +1,6 @@
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
 import { Car } from "@modules/cars/infra/typeorm/entities/Car";
-import { Specification } from "@modules/cars/infra/typeorm/entities/Specification";
 import { ICarsRepository } from "@modules/cars/repositories/ICarsRepository";
 import { ISpecificationsRepository } from "@modules/cars/repositories/ISpecificationsRepository";
 import { AppError } from "@shared/errors/AppError";
@@ -11,10 +10,13 @@ interface IRequest {
   specifications_id: string[];
 }
 
+@injectable()
 class CreateCarSpecificationUseCase {
   constructor(
-    // @inject("CarsRepository")
+    @inject("CarsRepository")
     private carsRepository: ICarsRepository,
+
+    @inject("SpecificationsRepository")
     private specificationsRepository: ISpecificationsRepository
   ) {}
 
@@ -25,23 +27,15 @@ class CreateCarSpecificationUseCase {
       throw new AppError("Car does not exists!");
     }
 
-    const specificationsPromise = specifications_id.map(async (id) => {
-      const specification = await this.specificationsRepository.findById(id);
-      return specification;
-    });
-
-    let specifications: Specification[] = [];
-
-    await Promise.all(specificationsPromise).then((specificationsPromise) => {
-      specifications = specificationsPromise;
-    });
-
-    const car = await this.carsRepository.createSpecification(
-      carExists,
-      specifications
+    const specifications = await this.specificationsRepository.findByIds(
+      specifications_id
     );
 
-    return car;
+    carExists.specifications = specifications;
+
+    await this.carsRepository.create(carExists);
+
+    return carExists;
   }
 }
 
